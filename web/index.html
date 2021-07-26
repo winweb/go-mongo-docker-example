@@ -16,26 +16,55 @@
   </form>
   <div id="posts"></div>
   <script>
-    $(document).ready(function() {
+    function getPost(){
+      $('#posts').empty();
       $.get('http://localhost:8080/posts', function(posts) {
         $list = $('#posts');
         for (var i = 0; i < posts.length; i++) {
-          $list.append('<p>' + posts[i].text + '</p>');
+          var dt = posts[i];
+          $list.append('<p><input type="text" value="' + dt.text + '" onBlur="updatePost(\'' + dt.id + '\',this.value)"/><buttun onClick="deletePost(\'' + dt.id + '\')">DEL</button></p>');
         }
       });
+    }
+
+    $(document).ready(function() {
+      getPost();
+
       $('#form').submit(function(event) {
         event.preventDefault();
-        var text = $('#post-input').val();
+        var input = $('#post-input');
+        var text = input.val();
+        input.val('');
         $.post(
           'http://localhost:8080/posts',
           JSON.stringify({text: text}),
           function() {
-            location.reload();
+            getPost()
           }
         );
       });
     });
+
+    function deletePost(id){
+      $.ajax({
+          url: 'http://localhost:8080/posts/'+id,
+          type: 'DELETE',
+          success: function() {
+            getPost()
+          }
+      });
+    }
+
+    function updatePost(id, text){
+      $.ajax({
+          url: 'http://localhost:8080/posts/'+id,
+          type: 'PUT',
+          data: JSON.stringify({text: text}),
+          success: function() {
+            getPost()
+          }
+      });
+    } 
   </script>
 </body>
-
 </html>

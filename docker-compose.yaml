@@ -13,7 +13,7 @@ services:
     container_name: 'web'
     image: 'nginx:latest'
     ports:
-      - '8081:80'
+      - '80:80'
     volumes:
       - './web:/usr/share/nginx/html'
     depends_on:
